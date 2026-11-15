@@ -1,6 +1,6 @@
 # Privacy Policy for NativeKey
 
-**Last updated: 2026-08-04**
+**Last updated: 2026-11-15**
 
 **Contact:** nativekey.support@gmail.com
 
@@ -14,7 +14,9 @@ NativeKey is a keyboard input method. It lets you type into other apps, provides
 - Normal typing does not call an AI service.
 - Local suggestions and learned words stay on your device.
 - On supported devices, NativeKey can use on-device AI powered by Gemini Nano through Android system services. In this mode, the prompt and result are processed on the device and are not sent to a cloud AI provider for inference.
-- Cloud AI features run only when you explicitly request them. Depending on your selected provider, text may be sent over HTTPS to Google Gemini, Anthropic Claude, or OpenAI using your own API key.
+- Cloud AI features run only when you explicitly request them. NativeKey supports bring-your-own-key (BYOK) cloud providers and may also provide a first-party managed cloud option called NativeKey AI.
+- With NativeKey AI, the requested text is sent over HTTPS to a NativeKey-operated backend, which sends the request to the configured AI inference provider. You do not need to supply your own provider API key for this mode.
+- NativeKey AI uses a random installation identifier and short-lived authentication token. The backend keeps technical metadata for security, quota, reliability, and cost accounting. It is not designed to keep your normal typing content as long-term history.
 - Clipboard text is used for incoming translation or similar AI flows only when you start that flow.
 - Protected contexts such as passwords, banking apps, and similar sensitive fields disable AI, clipboard-based AI flows, suggestions, and local learning where designed.
 - NativeKey supports optional one-time purchases through Google Play Billing.
@@ -36,7 +38,7 @@ NativeKey is a third-party Android keyboard. When enabled in Android system sett
 - show optional local word suggestions;
 - optionally learn frequently used words, correction choices, and word pairs on your device;
 - optionally help you write, rewrite, translate, or understand text;
-- use either supported on-device AI or a cloud AI provider that you configure;
+- use supported on-device AI, a cloud AI provider that you configure with your own key, or the NativeKey AI managed cloud service when available;
 - offer optional one-time purchases through Google Play.
 
 Android displays a standard warning when any third-party keyboard is enabled. NativeKey is designed so that normal typing does not call AI services and protected fields use a privacy-safe keyboard mode.
@@ -147,38 +149,73 @@ NativeKey excludes its lifetime-entitlement preference file from the Android clo
 
 ### 3.1 Cloud AI features
 
-Cloud AI features are optional.
+Cloud AI features are optional and run only after you explicitly start an AI action.
 
-If you save an API key and explicitly start a cloud AI action, NativeKey may send the following over HTTPS:
+NativeKey supports two cloud AI paths:
+
+#### BYOK cloud AI
+
+If you choose a supported provider and save your own API key, NativeKey may send the following directly over HTTPS to that provider:
 
 - selected text;
-- text you typed;
+- text you typed for the requested AI action;
 - copied clipboard text used for an incoming AI flow;
 - source and target language choices;
 - instructions needed to complete the requested AI action;
 - the API key required by the selected provider.
 
-The data is sent directly to the provider you selected under:
-
-`Settings → Connect your AI`
-
-Supported cloud providers may include:
+Supported BYOK providers may include:
 
 - Google Gemini;
 - Anthropic Claude;
 - OpenAI.
 
-Cloud AI requests use your own API key. NativeKey does not currently provide a shared NativeKey cloud AI account or operate a shared NativeKey cloud AI backend on your behalf.
+Your API key is used only for the provider you selected.
+
+#### NativeKey AI managed cloud service
+
+When NativeKey AI is available and selected, you do not provide your own AI-provider API key.
+
+After you explicitly start a NativeKey AI action, NativeKey may send the following over HTTPS to a NativeKey-operated backend:
+
+- the text needed for the requested rewrite or translation;
+- source and target language choices;
+- the selected tone;
+- a fixed message style used by the app;
+- app version and version code;
+- a random installation identifier and request identifier used for authentication, quota, abuse prevention, and request handling.
+
+The NativeKey backend constructs the AI prompt and sends the request to the configured inference provider. The current managed service may use OpenAI.
+
+The NativeKey backend is designed not to log input text, output text, prompts, clipboard text, API keys, or authorization headers in its application logs.
+
+For reliability and duplicate-request protection, a completed NativeKey AI response may be stored temporarily in a short-lived idempotency cache and then expired and purged. This cache is not intended as conversation history or long-term content storage.
+
+The backend may retain technical metadata such as:
+
+- random installation identifier;
+- request identifier;
+- AI mode;
+- source and target language metadata;
+- app version and version code;
+- request count and quota state;
+- input and output token counts;
+- model route;
+- latency;
+- status or normalized error information;
+- timestamps needed for security, operations, and accounting.
+
+NativeKey AI does not require a NativeKey user account.
 
 Outgoing AI actions, such as rewriting or translating text you wrote, run only after you explicitly request the action.
 
 Incoming AI actions, such as translating copied text, may read clipboard plain text only after you initiate the incoming AI flow.
 
-If you do not configure a cloud provider or do not start a cloud AI action, cloud AI transmission does not occur.
+If you do not start a cloud AI action, cloud AI transmission does not occur.
 
 ### 3.2 Third-party AI providers
 
-When text is sent to Google, Anthropic, or OpenAI, that provider processes it under its own terms, privacy policy, account settings, and retention rules.
+When text is sent to Google, Anthropic, OpenAI, or another configured inference provider, that provider processes it under its own terms, privacy policy, and service settings. This applies whether the request is sent directly in BYOK mode or through the NativeKey AI managed backend.
 
 NativeKey does not operate those services and cannot guarantee:
 
@@ -221,7 +258,7 @@ Google Play handles the financial transaction under Google’s own terms and pri
 
 ## 4. API keys
 
-Cloud AI features require an API key obtained directly from the selected provider.
+BYOK cloud AI features require an API key obtained directly from the selected provider. NativeKey AI does not require you to provide your own inference-provider API key.
 
 - API keys are stored locally in encrypted app-private storage using Android security APIs.
 - Saved keys are hidden in the NativeKey interface.
@@ -247,7 +284,7 @@ NativeKey does not declare a separate Android clipboard permission. Clipboard ac
 
 Clipboard text used with on-device AI is processed on the device.
 
-Clipboard text used with a cloud AI action may be sent to the selected provider as described in Section 3.
+Clipboard text used with a cloud AI action may be sent either directly to the selected BYOK provider or to the NativeKey AI managed backend and its configured inference provider, as described in Section 3.
 
 NativeKey does not send clipboard text to an AI provider in the background without your action.
 
@@ -334,7 +371,7 @@ Eligible purchases may be restored by querying Google Play again with the Google
 
 ## 7. Permissions and Android access
 
-NativeKey declares the `INTERNET` permission so it can contact a cloud AI provider when you explicitly use a cloud AI feature.
+NativeKey declares the `INTERNET` permission so it can contact a selected BYOK cloud provider or the NativeKey AI managed backend when you explicitly use a cloud AI feature.
 
 The NativeKey input-method service is protected by Android’s `BIND_INPUT_METHOD` system permission. This allows NativeKey to function as a keyboard and is controlled by Android.
 
@@ -359,7 +396,8 @@ Based on the current app implementation:
 - NativeKey does not integrate third-party analytics SDKs;
 - NativeKey does not integrate advertising SDKs;
 - NativeKey does not sell personal data;
-- NativeKey does not operate behavioral advertising or cross-app tracking.
+- NativeKey does not operate behavioral advertising or cross-app tracking;
+- the NativeKey AI backend may process and retain privacy-safe technical metadata for authentication, quota enforcement, abuse prevention, reliability, and cost accounting, as described in Section 3.1.
 
 If this changes in a future version, this policy and the Google Play Data Safety declaration will be updated before or alongside that release.
 
@@ -401,9 +439,15 @@ Temporary in-app state may remain in memory or local UI state only as needed to 
 
 ### 9.4 Cloud AI data
 
-Text sent to Google, Anthropic, or OpenAI is handled according to the selected provider’s policies.
+For BYOK mode, text sent directly to Google, Anthropic, OpenAI, or another supported provider is handled according to that provider’s policies.
 
-NativeKey does not control the provider’s retention period and cannot delete provider-held request data on your behalf.
+For NativeKey AI, the requested text passes through the NativeKey-operated backend and the configured inference provider. NativeKey does not use the backend as a long-term conversation-history store.
+
+A completed NativeKey AI response may be retained briefly in a short-lived idempotency cache for duplicate-request protection and then expired and purged.
+
+Technical operational records, such as random installation and request identifiers, mode and language metadata, request counts, token counts, model route, latency, status, app version, and timestamps, may be retained for security, quota, reliability, and accounting purposes.
+
+NativeKey does not intentionally store normal keyboard typing as a server-side typing history.
 
 ### 9.5 Google Play purchase data
 
@@ -432,7 +476,7 @@ To request information about deletion of any data that NativeKey may control, co
 
 nativekey.support@gmail.com
 
-Because NativeKey does not maintain user accounts or a central database of typing content, there may be no server-side NativeKey data associated with your request.
+NativeKey does not maintain a central server-side history of normal typing. If you have used NativeKey AI, limited technical backend records associated with a random installation identifier may exist. Because NativeKey does not require a NativeKey user account, deletion requests may require information that reasonably allows NativeKey to locate the relevant installation records.
 
 For data sent to a cloud AI provider, contact that provider or use its account and privacy controls.
 
@@ -493,6 +537,8 @@ NativeKey includes in-app Privacy & Safety information explaining that:
 - local suggestions and learning stay on the device;
 - on-device AI processes requests locally on supported devices;
 - cloud AI sends text only after an explicit AI action;
+- BYOK cloud AI can send the requested text directly to the provider selected by the user;
+- NativeKey AI can send the requested text through a NativeKey-operated backend to the configured inference provider and may retain privacy-safe technical metadata plus a short-lived idempotency response cache;
 - protected fields disable AI and clipboard reading where designed;
 - learned suggestions can be cleared in NativeKey settings;
 - optional purchases are handled through Google Play;

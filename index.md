@@ -122,9 +122,10 @@ NativeKey stores a local record of Google Play purchase status so that the app c
 The current implementation keeps separate entitlement records for:
 
 - On-device AI Lifetime;
-- BYOK Lifetime, which relates to use of your own supported AI-provider API key.
+- BYOK Lifetime, which relates to use of your own supported AI-provider API key;
+- NativeKey AI Pro, a Google Play subscription for the NativeKey-managed AI service.
 
-These products are independent. A purchase record for one product does not automatically create ownership of the other.
+These products are independent. Ownership of either Lifetime product does not automatically create a NativeKey AI Pro subscription, and a NativeKey AI Pro subscription does not create Lifetime ownership.
 
 The local purchase record may contain:
 
@@ -228,21 +229,25 @@ For requests concerning data held by a cloud AI provider, use that provider’s 
 
 ### 3.3 Google Play Billing
 
-NativeKey uses Google Play Billing for optional one-time purchases.
+NativeKey uses Google Play Billing for optional one-time purchases and for the NativeKey AI Pro subscription.
 
 When Billing features are used, NativeKey communicates with Google Play to:
 
 - connect to the Google Play Billing service;
-- retrieve available one-time products;
-- retrieve localized product and offer information;
+- retrieve available one-time products and subscription products;
+- retrieve localized product, base-plan, and offer information;
 - start a purchase flow after your action;
 - receive purchase updates;
 - acknowledge eligible completed purchases;
-- query active purchases;
-- restore eligible purchases;
+- query active one-time purchases and subscriptions;
+- restore or re-verify eligible purchases;
 - reconcile locally stored purchase-entitlement records.
 
 NativeKey may query Google Play when the NativeKey settings app starts or resumes, when purchase information needs to be refreshed, or when you choose Restore purchases.
+
+NativeKey AI Pro uses server-side purchase verification. When you have a Google Play NativeKey AI Pro purchase, the app may send the Google Play purchase token over HTTPS to the NativeKey-operated backend. The backend uses that token only to verify or acknowledge the purchase with the Google Play Developer API.
+
+The NativeKey backend does not intentionally log or persist the raw Google Play purchase token. It may retain a SHA-256 hash of the token together with limited subscription-entitlement metadata such as the product ID, verified subscription state, entitlement status, expiry time, verification time, and random installation identifier.
 
 Google Play Billing operations do not include:
 
@@ -449,9 +454,13 @@ Technical operational records, such as random installation and request identifie
 
 NativeKey does not intentionally store normal keyboard typing as a server-side typing history.
 
-### 9.5 Google Play purchase data
+### 9.5 Google Play purchase and subscription data
 
-Google Play retains and processes purchase, payment, account, and transaction information under Google’s own terms and privacy practices.
+Google Play retains and processes purchase, payment, account, subscription, and transaction information under Google’s own terms and privacy practices.
+
+For NativeKey AI Pro, NativeKey may retain a server-side entitlement record linked to a random installation identifier. The record may include a SHA-256 hash of the Google Play purchase token, product ID, subscription state, entitlement status, expiry time, and verification timestamps. The raw purchase token is used transiently for Google Play verification or acknowledgement and is not intended to be retained in NativeKey’s database or application logs.
+
+Local NativeKey AI Pro entitlement state remains on the device until app data is cleared or NativeKey is uninstalled. Server-side entitlement metadata may remain as needed for purchase verification, fraud/abuse prevention, entitlement enforcement, operational integrity, and accounting, subject to applicable deletion requirements.
 
 NativeKey does not control Google’s retention periods or Google Play purchase records.
 
@@ -492,6 +501,8 @@ You can:
 - remove saved cloud-provider API keys;
 - clear learned suggestions;
 - choose whether to purchase either independent one-time product;
+- choose whether to subscribe to NativeKey AI Pro;
+- manage or cancel an active NativeKey AI Pro subscription through Google Play;
 - choose not to start purchase or restore actions;
 - disable or switch away from NativeKey in Android system settings;
 - clear app data;
@@ -507,9 +518,9 @@ Purchases are handled through Google Play and may be subject to Google Play fami
 
 ## 13. International processing
 
-If you use cloud AI, text may be processed in countries where Google, Anthropic, or OpenAI operate infrastructure.
+If you use cloud AI, text may be processed in countries where Google, Anthropic, OpenAI, or NativeKey’s managed infrastructure operate services.
 
-That processing is initiated by your explicit use of the selected cloud AI provider with your own API key.
+That processing is initiated by your explicit use of a cloud AI action. BYOK requests use the provider and API key you selected; NativeKey AI requests pass through the NativeKey-operated backend to its configured inference provider.
 
 On-device AI processing occurs on the supported Android device, although Android system services may contact Google to prepare or update the model and related system components.
 

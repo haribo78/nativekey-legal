@@ -19,10 +19,10 @@ NativeKey is a keyboard input method. It lets you type into other apps, provides
 - NativeKey AI uses a random installation identifier and short-lived authentication token. The backend keeps technical metadata for security, quota, reliability, and cost accounting. It is not designed to keep your normal typing content as long-term history.
 - Clipboard text is used for incoming translation or similar AI flows only when you start that flow.
 - Protected contexts such as passwords, banking apps, and similar sensitive fields disable AI, clipboard-based AI flows, suggestions, and local learning where designed.
-- NativeKey supports optional one-time purchases through Google Play Billing.
+- NativeKey supports optional one-time purchases and the NativeKey AI Pro subscription through Google Play Billing.
 - Google Play handles payment transactions. NativeKey does not receive or store payment-card numbers, bank-account details, or full payment credentials.
-- NativeKey stores only local purchase-entitlement information needed to show whether each product is purchased, pending, or not currently verified as owned.
-- Purchase tokens are not stored in NativeKey’s entitlement preferences and are not sent to a NativeKey-operated server.
+- NativeKey stores local purchase-entitlement information on the device. For NativeKey AI Pro, the backend also retains limited server-side entitlement metadata needed for verification and access control.
+- Purchase tokens are not stored in NativeKey’s local entitlement preferences. For NativeKey AI Pro subscription verification, the app may send the Google Play purchase token over HTTPS to the NativeKey backend; the backend uses it transiently for Google Play verification and does not intentionally persist the raw token.
 - NativeKey does not include advertising SDKs or third-party analytics SDKs.
 - NativeKey does not sell personal data.
 - NativeKey does not create or require a NativeKey user account.
@@ -293,7 +293,7 @@ Clipboard text used with a cloud AI action may be sent either directly to the se
 
 NativeKey does not send clipboard text to an AI provider in the background without your action.
 
-## 6. Google Play purchases
+## 6. Google Play purchases and subscriptions
 
 ### 6.1 Purchase types
 
@@ -302,7 +302,7 @@ NativeKey supports two independent optional one-time purchase products:
 - **On-device AI Lifetime**;
 - **BYOK Lifetime**, relating to use of your own supported AI-provider API key.
 
-NativeKey does not currently offer subscriptions.
+NativeKey also offers **NativeKey AI Pro**, a Google Play subscription for the NativeKey-managed AI service. The Lifetime products and NativeKey AI Pro are independent entitlements.
 
 Prices are supplied by Google Play in localized form. NativeKey does not hardcode or calculate your payment details.
 
@@ -328,15 +328,15 @@ NativeKey does not request or store:
 
 ### 6.3 Purchase tokens
 
-A Google Play purchase token may be handled temporarily in application memory when NativeKey receives, processes, or acknowledges a purchase.
+A Google Play purchase token may be handled temporarily in application memory when NativeKey receives, processes, acknowledges, restores, or verifies a purchase.
 
-NativeKey does not persist purchase tokens in its entitlement preferences.
+NativeKey does not persist purchase tokens in its local entitlement preferences.
 
-NativeKey does not intentionally log purchase tokens.
+NativeKey does not intentionally log raw purchase tokens.
 
-NativeKey does not send purchase tokens to a NativeKey-operated server.
+For the **On-device AI Lifetime** and **BYOK Lifetime** one-time products, purchase handling is performed through Google Play Billing in the app and those tokens are not used for NativeKey AI server entitlement.
 
-NativeKey currently does not operate a purchase-verification backend.
+For **NativeKey AI Pro**, the app may send the Google Play purchase token over HTTPS to the NativeKey backend. The backend uses the raw token transiently to verify or acknowledge the subscription with the Google Play Developer API, does not intentionally persist the raw token, and may retain a SHA-256 hash plus normalized entitlement metadata such as product ID, subscription state, entitlement status, expiry time, and verification timestamps.
 
 ### 6.4 Pending purchases
 

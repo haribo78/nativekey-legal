@@ -79,7 +79,7 @@ For NativeKey AI:
 - Normal typing does not call Managed AI.
 - AI transmission starts only after an explicit AI action.
 - Protected fields block AI where designed.
-- NativeKey application logs reject input_text, output_text, prompt, clipboard, API key, authorization and installation-token fields.
+- NativeKey application logs reject input_text, output_text, prompt, clipboard, API key, authorization, installation-token, and Google Play purchase-token fields.
 - Backend stores technical metadata for quota, reliability, security and accounting.
 - A completed AI response may be cached temporarily for idempotency; current default TTL is 120 seconds.
 - NativeKey does not require a NativeKey user account for Managed AI.
@@ -91,12 +91,27 @@ The Privacy Policy provides nativekey.support@gmail.com for data/deletion reques
 
 Because Managed AI uses a random installation identity rather than a NativeKey account, any future deletion workflow must provide a practical way to identify the installation records that should be deleted. Do not promise account-based deletion until an account system exists.
 
-## Subscription addition — future Production form impact
+## NativeKey AI Pro subscription — Production form impact
 
-When Managed AI subscriptions are enabled and purchase tokens/status are sent to the backend, re-open the Data Safety form and review at least:
-- Purchase history;
-- Device or other IDs / installation association;
+The v9 Internal Testing implementation sends a Google Play purchase token to the NativeKey backend for server-side verification and acknowledgement. The backend retains a SHA-256 token hash plus subscription-entitlement metadata, but not the raw token.
+
+Before any Production release containing NativeKey AI Pro, update the Play Console Data safety form.
+
+### Financial info → Purchase history
+
+Recommended declaration for the implemented subscription path:
+
+- Collected: YES.
+- Required or optional: OPTIONAL at app level; required only when the user chooses NativeKey AI Pro.
+- Purposes: App functionality; Fraud prevention, security and compliance.
+- User payment info: NO, provided NativeKey continues not to access card/bank/payment-account details handled directly by Google Play.
+
+Google’s current Data Safety guidance distinguishes payment information handled directly by Google Play from other financial information the app receives, including purchase history. NativeKey receives and retains subscription-state/entitlement information, so do not rely on the payment-processor exception to omit Purchase history.
+
+Also re-check:
+- Device or other IDs / random installation association;
 - App interactions;
-- any server-side entitlement records.
+- server-side entitlement records;
+- whether any provider transfer qualifies for a Play “sharing” exception at submission time.
 
 Do not publish the subscription build with the old Data Safety answers.
